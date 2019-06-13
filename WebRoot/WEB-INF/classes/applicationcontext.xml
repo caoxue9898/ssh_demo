@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       					   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       					   http://www.springframework.org/schema/tx 
+       					   http://www.springframework.org/schema/tx/spring-tx.xsd
+       					   http://www.springframework.org/schema/aop 
+       					   http://www.springframework.org/schema/aop/spring-aop.xsd
+       					   http://www.springframework.org/schema/context 
+       					   http://www.springframework.org/schema/context/spring-context.xsd">
+       					   
+    <!-- 配置c3p0连接池 -->
+    <!-- 整合hibernate 第一步 -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+		<property name="jdbcUrl" value="jdbc:mysql:///ssh_crm02"></property>
+		<property name="user" value="root"></property>
+		<property name="password" value="root"></property>
+	</bean>
+	
+	 <!-- 整合hibernate 第二步 -->
+	<!-- sessionfactory的创建 -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+	<property name="dataSource" ref="dataSource"></property><!-- 首先注入数据源 -->
+	<!-- 指定配置文件的位置 -->
+	<property name="configLocations" value="classpath:hibernate.cfg.xml"></property>
+	</bean>
+	
+	<!-- 事物配置 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+	<property name="sessionFactory" ref="sessionFactory"></property><!-- sessionfactory中包括数据源 -->
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/><!-- 开启事物的注解 -->
+       					   
+ 	<!-- struts2整合action 把struts2中 action在spring中进行配置-->
+ 	<!-- action多实例 -->
+ 	<bean id="userAction" class="cn.itcast.action.UserAction" scope="prototype">
+ 	<property name="userService" ref="userService"></property>
+ 	</bean>		
+ 	
+ 	<!-- service --> 
+ 	<bean id="userService" class="cn.itcast.service.UserService">
+ 	<property name="userDao" ref="userDaoImpl"></property><!-- 接口=实现类 -->
+ 	</bean>
+ 	
+ 	<!-- dao -->
+ 	<bean id="userDaoImpl" class="cn.itcast.dao.UserDaoImpl">
+ 	<!-- <property name="hibernateTemplate" ref="hibernateTemplate"></property>前者为属性，后者为ref的值 -->
+ 	<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+ 	
+ 	<!-- <bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">
+ 	<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean> -->
+ 	
+ 	<!-- 引入其他配置文件 -->
+ 	<import resource="classpath:customer.xml"/>
+ 	<import resource="classpath:linkman.xml"/>
+ 	<import resource="classpath:visit.xml"/>
+ </beans>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+    <hibernate-mapping>
+    		<class name="cn.itcast.entity.LinkMan" table="t_linkman">
+    <id name="linkid" column="linkid">
+    <generator class="native"></generator>
+    </id>
+		    <property name="lkmName" column="lkmName"></property>
+		    <property name="lkmGender" column="lkmGender"></property>
+		    <property name="lkmPhone" column="lkmPhone"></property>
+		    <property name="lkmMobile" column="lkmMobile"></property>
+		    
+    <!-- 多对一： 多个联系人对应一个客户 -->
+    		<many-to-one name="customer" class="cn.itcast.entity.Customer" column="clid"></many-to-one>
+    <!-- 外键名称与前面对应 -->
+    </class>
+    </hibernate-mapping>
